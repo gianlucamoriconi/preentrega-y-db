@@ -106,9 +106,27 @@ class Cart {
     async deleteFromCartById(req, res) {
         try {
             if (fs.existsSync("./cart.json")) {
-                
+                const idCartParams = Number(req.params.id);
+                const idProductParams = Number(req.params.id_product);
+                const getCart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
+                const getProducts = await JSON.parse(fs.readFileSync('./products.json', 'utf-8'));
+                const filterProduct = getProducts.filter( product => product.id !== idProductParams);
+                const filterCart = getCart.filter( cart => cart.id !== idCartParams);
+
+                filterProduct.length == getProducts.length ? 
+                    console.log(`No product matches ID:${idProductParams}`) :
+                    console.log(`Product with ID:${idProductParams} deleted successfully!`);
+                fs.writeFileSync('./products.json', JSON.stringify(filterProduct, null, 4));
+
+                filterCart.length == getCart.length ? 
+                    console.log(`No cart matches ID:${idCartParams}`) :
+                    console.log(`Cart with ID:${idCartParams} deleted successfully!`);
+                fs.writeFileSync('./cart.json', JSON.stringify(filterCart, null, 4));
+
+                res.send(`Some changes may have occured. Please checkout products and cart arrays.`);
+
             } else {
-                res.send(`No cart file provided. Please add one.`);
+                res.send(`No cart file provided. Please add a new one.`);
             }
         }
         catch (err) {
