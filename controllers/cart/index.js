@@ -45,36 +45,67 @@ class Cart {
             console.log(`METHOD createCart ERR! ${err}`);
         }
     }
+
+    async getCart(req, res) {
+        try {
+            if (fs.existsSync("./cart.json")) {
+                const idCart = req.params.id;
+                const getCartProducts = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
+                const findIdCart = getCartProducts.find( item => item.id === Number(idCart));
+                findIdCart !== undefined ? res.send(findIdCart) : res.send(`No cart with ID:${idCart}`);
+            } else {
+                const cart = [];
+                res.send(cart);
+            }
+        }
+        catch (err) {
+            console.log(`METHOD getCart ERR! ${err}`);
+        }
+    }
+
+    async deleteById(req, res) {
+        try {
+            if (fs.existsSync('./cart.json')) {
+                const idParams = req.params.id;
+                const getCart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
+                const filterProducts = getCart.filter( item => item.id !== Number(idParams));
+                fs.writeFileSync('./cart.json', JSON.stringify(filterProducts, null, 4));
+                filterProducts.length == getCart.length ? res.send(`No cart matches ID:${idParams}`) : res.send(filterProducts);
+            }
+        }
+        catch (err) {
+            res.send(`METHOD deleteById ERR! ${err}`);
+        }
+    }
+
+    async addToCartById(req, res) {
+        try {
+            if (fs.existsSync("./cart.json")) {
+                const products = await JSON.parse(fs.readFileSync("./products.json", "utf-8"));
+                const cart = await JSON.parse(fs.readFileSync("./cart.json", "utf-8"));
+                const selectedProduct = products.find( item => item.id === req.body.id);
+                const productIndex = products.findIndex( item => item.id === req.body.id);
+                delete selectedProduct.stock;
+                selectedProduct.quantity = req.body.quantity;
+                products[productIndex].stock -= req.body.quantity;
+                cart.push(selectedProduct);
+                fs.writeFileSync("./products.json", JSON.stringify(products));
+                fs.writeFileSync("./cart.json", JSON.stringify(cart));
+                res.status(201).send(`✔ New product added to cart successfully!\nProduct ID is ${req.body.id}`)
+            } else {
+                const getData = [];
+                const newProduct = req.body;
+                newProduct.id = 1;
+                getData.push(newProduct);
+                await fs.writeFileSync("./cart.json", JSON.stringify(getData));
+            }
+        }
+    
+        catch (err) {
+            console.log(`METHOD addToCartById ERR! ${err}`);
+        }
+    }
 }
 
 const cartController = new Cart();
 module.exports = cartController;
-
-//! para el metodo post('/:id/products')
-// async addToCart(req, res) {
-//     try {
-//         if (fs.existsSync("./cart.json")) {
-//             const products = await JSON.parse(fs.readFileSync("./products.json", "utf-8"));
-//             const cart = await JSON.parse(fs.readFileSync("./cart.json", "utf-8"));
-//             const selectedProduct = products.find( item => item.id === req.body.id);
-//             const productIndex = products.findIndex( item => item.id === req.body.id);
-//             delete selectedProduct.stock;
-//             selectedProduct.quantity = req.body.quantity;
-//             products[productIndex].stock -= req.body.quantity;
-//             cart.push(selectedProduct);
-//             fs.writeFileSync("./products.json", JSON.stringify(products));
-//             fs.writeFileSync("./cart.json", JSON.stringify(cart));
-//             res.status(201).send(`✔ New product added to cart successfully!\nProduct ID is ${req.body.id}`)
-//         } else {
-//             const getData = [];
-//             const newProduct = req.body;
-//             newProduct.id = 1;
-//             getData.push(newProduct);
-//             await fs.writeFileSync("./cart.json", JSON.stringify(getData));
-//         }
-//     }
-
-//     catch (err) {
-//         console.log(`METHOD addToCart ERR! ${err}`);
-//     }
-// }

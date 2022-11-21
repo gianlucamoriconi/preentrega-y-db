@@ -4,11 +4,11 @@ const routerCart = new Router();
 
 routerCart.post("/", cartController.createCart);
 
-routerCart.get("/", (req, res) => res.send("Cart route"));
+routerCart.get("/:id/products", cartController.getCart);
 
-routerCart.post("/", (req, res) => res.send("Cart route"));
+routerCart.delete("/:id", cartController.deleteById);
 
-routerCart.delete("/", (req, res) => res.send("Cart route"));
+routerCart.post("/:id/products", cartController.addToCartById);
 
 routerCart.delete("/", (req, res) => res.send("Cart route"));
 
