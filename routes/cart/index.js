@@ -10,6 +10,6 @@ routerCart.delete("/:id", cartController.deleteById);
 
 routerCart.post("/:id/products", cartController.addToCartById);
 
-routerCart.delete("/", (req, res) => res.send("Cart route"));
+routerCart.delete("/:id/products/:id_product", cartController.deleteFromCartById);
 
 module.exports = routerCart;

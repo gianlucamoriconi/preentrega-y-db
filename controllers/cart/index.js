@@ -81,28 +81,38 @@ class Cart {
     async addToCartById(req, res) {
         try {
             if (fs.existsSync("./cart.json")) {
-                const products = await JSON.parse(fs.readFileSync("./products.json", "utf-8"));
-                const cart = await JSON.parse(fs.readFileSync("./cart.json", "utf-8"));
-                const selectedProduct = products.find( item => item.id === req.body.id);
-                const productIndex = products.findIndex( item => item.id === req.body.id);
-                delete selectedProduct.stock;
-                selectedProduct.quantity = req.body.quantity;
-                products[productIndex].stock -= req.body.quantity;
-                cart.push(selectedProduct);
-                fs.writeFileSync("./products.json", JSON.stringify(products));
-                fs.writeFileSync("./cart.json", JSON.stringify(cart));
-                res.status(201).send(`✔ New product added to cart successfully!\nProduct ID is ${req.body.id}`)
+                const idParams = req.params.id;
+                const getProducts = await JSON.parse(fs.readFileSync('./products.json', 'utf-8'));
+                const getCart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
+                const findCart = getCart.find( item => item.id === Number(idParams));
+                if (findCart !== undefined) {
+                    const arrayFromFindProducts = findCart.products;
+                    const arrayForPush = arrayFromFindProducts.concat(getProducts);
+                    findCart.products = arrayForPush;
+                    fs.writeFileSync('./cart.json', JSON.stringify(getCart, null, 4));
+                    res.send(`Product added to cart with ID:${idParams} successfully!`);
+                } else {
+                    res.send(`No cart with ID:${idParams}`);
+                };
             } else {
-                const getData = [];
-                const newProduct = req.body;
-                newProduct.id = 1;
-                getData.push(newProduct);
-                await fs.writeFileSync("./cart.json", JSON.stringify(getData));
+                res.send(`No cart file provided. Please add one.`);
             }
         }
-    
         catch (err) {
-            console.log(`METHOD addToCartById ERR! ${err}`);
+            res.send(`METHOD addToCartById ERR! ${err}`);
+        }
+    }
+
+    async deleteFromCartById(req, res) {
+        try {
+            if (fs.existsSync("./cart.json")) {
+                
+            } else {
+                res.send(`No cart file provided. Please add one.`);
+            }
+        }
+        catch (err) {
+            res.send(`METHOD deleteFromCartById ERR! ${err}`);
         }
     }
 }
