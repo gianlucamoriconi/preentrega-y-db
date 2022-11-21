@@ -9,6 +9,7 @@ class Products {
 
     async getProducts(req, res) {
         try {
+            let admin = true;
             if (fs.existsSync("./products.json")) {
                 const getProducts = await JSON.parse(fs.readFileSync("./products.json", "utf-8"));
                 const findProduct = getProducts.find( item => item.id === Number(req.params.id));
@@ -25,6 +26,7 @@ class Products {
 
     async save(req, res) {
         try {
+            let admin = true;
             if (fs.existsSync("./products.json")) {
                 const getData = await JSON.parse(fs.readFileSync("./products.json", "utf-8"));
                 const lastProduct = getData[getData.length - 1].id;
@@ -50,6 +52,7 @@ class Products {
 
     async modifyProductById(req, res) {
         try {
+            let admin = true;
             const { name, timestamp, description, code, price, stock } = req.body;
             const { id } = req.params;
             const idParam = parseInt(id);
@@ -73,6 +76,7 @@ class Products {
 
     async deleteById(req, res) {
         try {
+            let admin = true;
             if (fs.existsSync("./products.json")) {
                 const idParam = req.params.id;
                 const successMessage = `ID:${idParam} product deleted successfully!`;

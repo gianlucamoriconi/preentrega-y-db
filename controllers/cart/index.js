@@ -7,6 +7,7 @@ class Cart {
 
     async createCart(req, res) {
         try {
+            let admin = true;
             if (fs.existsSync("./cart.json")) {
                 let t = new Date();
                 const cart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
@@ -48,6 +49,7 @@ class Cart {
 
     async getCart(req, res) {
         try {
+            let admin = true;
             if (fs.existsSync("./cart.json")) {
                 const idCart = req.params.id;
                 const getCartProducts = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
@@ -65,6 +67,7 @@ class Cart {
 
     async deleteById(req, res) {
         try {
+            let admin = true;
             if (fs.existsSync('./cart.json')) {
                 const idParams = req.params.id;
                 const getCart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
@@ -80,6 +83,7 @@ class Cart {
 
     async addToCartById(req, res) {
         try {
+            let admin = true;
             if (fs.existsSync("./cart.json")) {
                 const idParams = req.params.id;
                 const getProducts = await JSON.parse(fs.readFileSync('./products.json', 'utf-8'));
@@ -105,6 +109,7 @@ class Cart {
 
     async deleteFromCartById(req, res) {
         try {
+            let admin = true;
             if (fs.existsSync("./cart.json")) {
                 const idCartParams = Number(req.params.id);
                 const idProductParams = Number(req.params.id_product);
