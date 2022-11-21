@@ -1,1 +1,32 @@
-[{"name":"hola","price":1000,"category":"IT","id":1,"quantity":3000,"stock":null},{"name":"hola","price":1000,"category":"IT","id":2,"quantity":3,"stock":null}]
+[
+    {
+        "name": "Logi Mouse",
+        "timestamp": 123512341,
+        "description": "A powerful gaming mouse",
+        "code": "0AB3",
+        "price": 299,
+        "stock": 200,
+        "quantity": 10,
+        "id": 1
+    },
+    {
+        "name": "EEEEEEEEEE",
+        "timestamp": 21321455476,
+        "description": "EEEEEEEEEEEE",
+        "code": "BHSDGSD",
+        "price": 155,
+        "stock": 300,
+        "quantity": 10,
+        "id": 2
+    },
+    {
+        "name": "WWWWWW",
+        "timestamp": 9999,
+        "description": "FFASLSG",
+        "code": "NMKLASD",
+        "price": 299,
+        "stock": 400,
+        "quantity": 10,
+        "id": 3
+    }
+]
