@@ -100,7 +100,7 @@ function renderCartBody(){
                     console.log("El carrito tiene productos");
 
                     data.products.map((item, i) => {
-                        const productTemplate = `<div id="">
+                        const productTemplate = `<div id="" class="cart-item">
                         <div class="d-flex">
                             <div class="col-3 item-cart-col-img">
                                 <img class="w-100" src=${item.thumbnail} alt=${item.title}/>
@@ -127,7 +127,17 @@ function renderCartBody(){
 
     };
 
-    getCart();
+    if (document.querySelector(".cart-item")){
+        document.querySelectorAll(".cart-item").forEach(item => {
+            item.remove();
+        });
+
+        getCart();
+    }
+
+    else {
+        getCart();
+    }
 
 }
 
@@ -144,7 +154,7 @@ function deleteCart(id){
     };
 
     deleteC();
-    cartBody();
+    renderCartBody();
 }
 
 window.onload = renderCartBody();
