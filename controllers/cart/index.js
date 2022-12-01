@@ -5,47 +5,58 @@ class Cart {
         this.db = "./cart.json";
     }
 
+
     async createCart(req, res) {
+        const dataCart = req.body;
+       
         try {
-            let admin = true;
             if (fs.existsSync("./cart.json")) {
-                let t = new Date();
-                const cart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
-                const products = await JSON.parse(fs.readFileSync('./products.json', 'utf-8'));
-                if (cart.length == 0) {
+
+                const cart = JSON.parse(fs.readFileSync("./cart.json", 'utf-8'));
+
+                if (cart.length === 0) {
                     const newCart = {
                         id: 1,
-                        timestamp: `${t.getDate()}/${t.getMonth()+1}/${t.getFullYear()} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`,
-                        products: products,
+                        timestamp: `${new Date().toLocaleString()}`,
+                        products: [dataCart],
                     };
                     cart.push(newCart);
-                    fs.writeFileSync('./cart.json', JSON.stringify(cart, null, 4), 'utf-8')
-                    res.status(201).send(`✔ New cart created! - ID:${newCart.id}`);
+                    fs.writeFileSync("./cart.json", JSON.stringify(cart, null, 2));
+                    res.send(`Nuevo carrito creado. ID:${newCart.id}`);
                 } else {
                     const lastCartId = cart[cart.length - 1].id;
                     const newCartId = lastCartId + 1;
                     const newCart = {
                         id: newCartId,
-                        timestamp: `${t.getDate()}/${t.getMonth()+1}/${t.getFullYear()} ${t.getHours()}:${t.getMinutes()}:${t.getSeconds()}`,
-                        products: products,
+                        timestamp: `${new Date().toLocaleString()}`,
+                        products: [dataCart],
                     };
                     cart.push(newCart);
-                    fs.writeFileSync('./cart.json', JSON.stringify(cart, null, 4), 'utf-8')
-                    res.status(201).send(`✔ New cart created! - ID:${newCart.id}`);
+                    fs.writeFileSync("./cart.json", JSON.stringify(cart, null, 2));
+                    console.log(dataCart);
+                    res.send(`Nuevo carrito creado. ID:${newCart.id}. 
+                    Producto: ${JSON.stringify(newCart, null, 2)}`);
                 }
             } else {
                 const cart = [];
-                const newProduct = req.body;
-                newProduct.id = 1;
-                cart.push(newProduct);
-                fs.writeFileSync("./cart.json", JSON.stringify(cart, null, 4), 'utf-8');
+                const newCartId = 1;
+                const newCart = {
+                    id: newCartId,
+                    timestamp: `${new Date().toLocaleString()}`,
+                    products: [dataCart],
+                };
+                cart.push(newCart);
+                fs.writeFileSync("./cart.json", JSON.stringify(cart, null, 2));
+                res.send(`Nuevo carrito creado. ID:${newCart.id}`);
             }
         }
 
         catch (err) {
-            console.log(`METHOD createCart ERR! ${err}`);
+            console.log(`An error ocurred in create cart method: ${err}`);
+            res.send(`An error ocurred in create cart method: ${err}`);
         }
     }
+
 
     async getCart(req, res) {
         try {
@@ -54,14 +65,14 @@ class Cart {
                 const idCart = req.params.id;
                 const getCartProducts = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
                 const findIdCart = getCartProducts.find( item => item.id === Number(idCart));
-                findIdCart !== undefined ? res.send(findIdCart) : res.send(`No cart with ID:${idCart}`);
+                findIdCart !== undefined ? res.send(findIdCart) : res.status(404).send(`No cart with ID:${idCart}`);
             } else {
                 const cart = [];
                 res.send(cart);
             }
         }
         catch (err) {
-            console.log(`METHOD getCart ERR! ${err}`);
+            console.log(`Error al intentar obtener el carrito ${err}`);
         }
     }
 
@@ -81,29 +92,98 @@ class Cart {
         }
     }
 
+    async deleteCartById(req, res){
+        const id = Number(req.params.id);
+        let carts = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
+
+
+        if (carts.length > 0){
+
+            if (carts.some((item) => item.id === id)){
+
+                carts = carts.filter((item) => item.id !== id);
+
+                try{
+                    fs.writeFileSync('./cart.json', JSON.stringify(carts, null, 2))
+                    console.log(`El carrito con ID ${id} fue borrado`);
+                    res.send(`El carrito con ID ${id} fue borrado`);
+                }
+
+                catch (err){
+                    console.log(`El carrito con ID ${id} no pudo ser borrado: ${err}`);
+                    res.send(`El carrito con ID ${id} no pudo ser borrado: ${err}`);
+                }
+
+            }
+            
+            else {
+                console.log(`El carrito con id ${id} no existe`);
+                res.send(`El carrito con id ${id} no existe`)
+            } 
+        }
+        
+        else {
+            console.log("No se puede eliminar por ID porque la lista de carritos está vacía.");
+            res.send("No se puede eliminar por ID porque la lista de carritos está vacía.");
+        }
+    }
+
     async addToCartById(req, res) {
+        let id = req.params.id;
+        let dataProduct = req.body;
+
         try {
-            let admin = true;
-            if (fs.existsSync("./cart.json")) {
-                const idParams = req.params.id;
-                const getProducts = await JSON.parse(fs.readFileSync('./products.json', 'utf-8'));
-                const getCart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
-                const findCart = getCart.find( item => item.id === Number(idParams));
-                if (findCart !== undefined) {
-                    const arrayFromFindProducts = findCart.products;
-                    const arrayForPush = arrayFromFindProducts.concat(getProducts);
-                    findCart.products = arrayForPush;
-                    fs.writeFileSync('./cart.json', JSON.stringify(getCart, null, 4));
-                    res.send(`Product added to cart with ID:${idParams} successfully!`);
-                } else {
-                    res.send(`No cart with ID:${idParams}`);
-                };
+            if (fs.existsSync('./cart.json')) {
+                id = Number(id);
+                var carts = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
+
+                var result = [];
+
+                if (typeof dataProduct !== 'object'){
+                    res.send('El contenido que enviaste no es un objeto. Por favor, envía el producto a agregar como un objeto, ya que se incorporará en un arreglo.');
+                }
+
+                else if (carts.some( (cart) => cart.id === id)) {
+                    console.log("Existe el carrito con ese ID");
+
+                    carts.map((cart) => {
+                        console.log("Maping carts");
+                        if (cart.id === id){
+                            if (carts.some( (cart) => cart.id === id)) {
+                                cart.products.map((product) => {
+                                    if (product.id === dataProduct.id) {
+                                        let productsInCart = cart.products.filter((prod) => prod.id !== dataProduct.id);
+                                        productsInCart.push(dataProduct);
+                                        fs.writeFileSync('./cart.json', JSON.stringify(carts, null, 2));
+                                        console.log("El producto en el carrito existe");
+                                        res.send(`El producto que agregaste ya existía y fue actualizado.`);
+                                    }
+                                });
+                            }
+
+                            else{
+                                console.log("El producto en el carrito no existe");
+                                cart.products.push(dataProduct);
+                                fs.writeFileSync('./cart.json', JSON.stringify(carts, null, 2));
+                                res.send(`La información del carrito ${id} fue actualizada.`)
+                            }
+                        }
+                    });
+                }
+        
+                else{
+                    res.send(`No existe ningún carrito con el id ${id}. Antes de actualizar o editar un carrito, es necesario que lo crees.`);
+                }
+
+                return result;
+
             } else {
-                res.send(`No cart file provided. Please add one.`);
+                res.send(`No hay carritos en la base de datos, cree uno.`);
             }
         }
         catch (err) {
-            res.send(`METHOD addToCartById ERR! ${err}`);
+            console.log(`Ocurrió un error al intentar agregar el producto en el carrito: ${err}`);
+            res.send(`Ocurrió un error al intentar agregar el producto en el carrito: ${err}`);
         }
     }
 

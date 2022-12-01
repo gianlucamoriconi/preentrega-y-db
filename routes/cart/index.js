@@ -6,7 +6,7 @@ routerCart.post("/", cartController.createCart);
 
 routerCart.get("/:id/products", cartController.getCart);
 
-routerCart.delete("/:id", cartController.deleteById);
+routerCart.delete("/:id", cartController.deleteCartById);
 
 routerCart.post("/:id/products", cartController.addToCartById);
 

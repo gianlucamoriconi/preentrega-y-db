@@ -1,0 +1,21 @@
+<div class="offcanvas offcanvas-end" tabindex="-1" id="cart" aria-labelledby="cart">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="offcanvasExampleLabel">Carrito</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div id="cartBody">
+
+      </div>
+    </div>
+    <div class="w-100 d-flex p-3 flex-wrap">
+      <!-- <div class="p-3 d-flex w-100">
+        <h4 class="text-end w-100">Total:</h4>
+        <hr>
+      </div> -->
+      <div class="p-3 d-flex w-100">
+        <button id="deleteCart" onclick="deleteCart(1)" class="btn btn-secondary w-100 me-2">Vaciar carrito</button>
+        <a class="btn btn-primary w-100 disabled" href="/">Iniciar compra</a>
+      </div>
+    </div>
+  </div>
