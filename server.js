@@ -16,10 +16,15 @@ const messages = [];
 io.on('connection', socket => {
     console.log('Nuevo cliente conectado.');
     socket.emit('messages', messages);
+    socket.emit('products');
 
     socket.on('new-message', data => {
         messages.push(data);
         io.sockets.emit('messages', messages);
+    });
+
+    socket.on('new-product', data => {
+        io.sockets.emit('products');
     });
 });
 
@@ -33,10 +38,11 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 
+app.use("/", routerRender);
+
 //API
 app.use("/api/cart", routerCart);
 app.use("/api/products", routerProducts);
-app.use("/", routerRender);
 
 
 const server = httpServer.listen(Port, () => {

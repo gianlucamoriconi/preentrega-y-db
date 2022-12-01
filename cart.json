@@ -1,23 +1,5 @@
 [
   {
-    "id": 1,
-    "timestamp": "21/11/2022 12:36:52",
-    "products": [
-      {
-        "id": 1,
-        "title": "Harry Potter y la piedra Filosofal",
-        "price": 1000,
-        "thumbnail": "https://contrapunto.cl/13094/harry-potter-y-la-piedra-filosofal.jpg"
-      },
-      {
-        "id": 2,
-        "title": "Harry Potter y la cámara secreta",
-        "price": 1000,
-        "thumbnail": "https://images.cdn2.buscalibre.com/fit-in/360x360/ad/4d/ad4df4ba516014a9fc39a0288a70957f.jpg"
-      }
-    ]
-  },
-  {
     "id": 2,
     "timestamp": "21/11/2022 13:8:49",
     "products": [

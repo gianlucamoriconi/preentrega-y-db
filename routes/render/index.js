@@ -5,8 +5,8 @@ const { Router } = require("express");
 const productController = require("../../controllers/products/index");
 const routerRender = new Router();
 
-routerRender.get('/', (req, res)=>{
-    let products_read = productController.getProducts(req, res);
+routerRender.get('/', async (req, res)=>{
+    let products_read = await productController.getProducts(req, res);
     const layout = "productList";
     const title = "Todos los productos";
 

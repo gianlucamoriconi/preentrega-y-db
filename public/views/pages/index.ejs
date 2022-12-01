@@ -21,7 +21,7 @@
     
                 <% if (layout === 'productList') { %>
     
-                    <%- include('../partials/product-list'); %>
+                    <%- include('../partials/product-list', {products_read: products_read}); %>
                 
                 <% } else if (layout === 'addForm') {%>
     

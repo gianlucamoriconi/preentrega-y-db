@@ -1,3 +1,12 @@
+/*
+
+    Cuando la api responde con éxito pero no encontró o lo que se solicitó está vacío,
+    devolvemos un status 204. Lo haremos de esta manera para quienes busquen utilizar la información
+    puedan validar una respuesta vacía a través del status y no con un null, length y undefined.
+
+*/
+
+
 const fs = require("fs");
 
 class Products {
@@ -8,7 +17,6 @@ class Products {
     async getProducts(req, res) {
 
         try {
-            let admin = true;
             if (fs.existsSync("./products.json")) {
                 const products = await JSON.parse(fs.readFileSync("./products.json", "utf-8"));
                 if (products.length > 0){
@@ -23,8 +31,10 @@ class Products {
             } 
             
             else {
+                //No hay productos, enviamos un status 204 y el array vacío.
                 const products = [];
-                res.send(`Empty products array. Please add one before reading. ${products}`);
+                res.status(204);
+                res.send(products);
             }
 
         }
@@ -50,6 +60,7 @@ class Products {
                     }
                 });
             } else {
+                //No encontramos el producto, enviamos un status 204 y un mensaje.
                 console.log(`El producto de ID: ${id} no fue encontrado`);
                 result = `El producto de ID: ${id} no fue encontrado`;
             }
@@ -136,13 +147,15 @@ class Products {
         }
 
         else{
+            res.status(204);
+            console.log(`No existe ningún producto con el id ${idParam}. Antes de actualizar o editar un producto, es necesario que lo crees.`);
             res.send(`No existe ningún producto con el id ${idParam}. Antes de actualizar o editar un producto, es necesario que lo crees.`);
+            
         }
     }
 
     async deleteById(req, res) {
         try {
-            let admin = true;
             if (fs.existsSync("./products.json")) {
                 const idParam = req.params.id;
                 const successMessage = `ID:${idParam} product deleted successfully!`;
@@ -152,11 +165,12 @@ class Products {
                 filterProducts.length == getProducts.length ? res.send(`No product matches ID:${idParam}`) : res.send(successMessage);
             } else {
                 const getProducts = [];
-                res.send(`⚠ Empty products array. Please add one before reading. ${getProducts}`);
+                res.status(204);
+                res.send(`Aún no hay ningún producto cargado.`);
             }
         }
         catch (err) {
-            console.log(`❌ METHOD deleteById ERR! ${err}`);
+            console.log(`Ocurrió un error al intentar eliminar el producto por su ID ${err}`);
         }
     }
 

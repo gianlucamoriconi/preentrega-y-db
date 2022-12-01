@@ -60,12 +60,11 @@ class Cart {
 
     async getCart(req, res) {
         try {
-            let admin = true;
             if (fs.existsSync("./cart.json")) {
                 const idCart = req.params.id;
                 const getCartProducts = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
                 const findIdCart = getCartProducts.find( item => item.id === Number(idCart));
-                findIdCart !== undefined ? res.send(findIdCart) : res.status(404).send(`No cart with ID:${idCart}`);
+                findIdCart !== undefined ? res.status(200).send(findIdCart) : res.status(404).send(`No cart with ID:${idCart}`);
             } else {
                 const cart = [];
                 res.send(cart);
@@ -78,7 +77,6 @@ class Cart {
 
     async deleteById(req, res) {
         try {
-            let admin = true;
             if (fs.existsSync('./cart.json')) {
                 const idParams = req.params.id;
                 const getCart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
@@ -187,35 +185,30 @@ class Cart {
         }
     }
 
+
+    //Revisar este método
     async deleteFromCartById(req, res) {
         try {
-            let admin = true;
-            if (fs.existsSync("./cart.json")) {
-                const idCartParams = Number(req.params.id);
-                const idProductParams = Number(req.params.id_product);
-                const getCart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
-                const getProducts = await JSON.parse(fs.readFileSync('./products.json', 'utf-8'));
-                const filterProduct = getProducts.filter( product => product.id !== idProductParams);
-                const filterCart = getCart.filter( cart => cart.id !== idCartParams);
+            const idCartParams = Number(req.params.id);
+            const idProductParams = Number(req.params.id_product);
+            const getCart = await JSON.parse(fs.readFileSync('./cart.json', 'utf-8'));
+            const getProducts = await JSON.parse(fs.readFileSync('./products.json', 'utf-8'));
+            const filterProduct = getProducts.filter( product => product.id !== idProductParams);
+            const filterCart = getCart.filter( cart => cart.id !== idCartParams);
 
-                filterProduct.length == getProducts.length ? 
-                    console.log(`No product matches ID:${idProductParams}`) :
-                    console.log(`Product with ID:${idProductParams} deleted successfully!`);
-                fs.writeFileSync('./products.json', JSON.stringify(filterProduct, null, 4));
+            filterProduct.length == getProducts.length ? 
+                console.log(`No product matches ID:${idProductParams}`) :
+                console.log(`Product with ID:${idProductParams} deleted successfully!`);
+            fs.writeFileSync('./products.json', JSON.stringify(filterProduct, null, 4));
 
-                filterCart.length == getCart.length ? 
-                    console.log(`No cart matches ID:${idCartParams}`) :
-                    console.log(`Cart with ID:${idCartParams} deleted successfully!`);
-                fs.writeFileSync('./cart.json', JSON.stringify(filterCart, null, 4));
+            filterCart.length == getCart.length ? 
+                console.log(`No cart matches ID:${idCartParams}`) :
+                console.log(`Cart with ID:${idCartParams} deleted successfully!`);
+            fs.writeFileSync('./cart.json', JSON.stringify(filterCart, null, 4));
 
-                res.send(`Some changes may have occured. Please checkout products and cart arrays.`);
-
-            } else {
-                res.send(`No cart file provided. Please add a new one.`);
-            }
         }
         catch (err) {
-            res.send(`METHOD deleteFromCartById ERR! ${err}`);
+            res.send(`El método de borrar el carrito por su ID ha fallado: ${err}`);
         }
     }
 }

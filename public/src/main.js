@@ -53,43 +53,36 @@ function renderMessage(data){
 }
 
 
-function renderProducts(data){
-
-    const html = data.map((item) =>{
-        return (`<div id="${item.id}" class="item p-2 col-12 col-md-3 col-lg-4 bg-body rounded">
-        <div class="item-image">
-            <img class="rounded" src="${item.thumbnail}" alt="product">
-        </div>
-        <div class="item-info p-3">
-            <div class="item-info">
-                <h4 class="item-name">${item.title}</h4>
-            </div>
-            <div class="item-price-container mb-4">
-                <span class="fw-bold item-price">$${formatterAR.format(item.price)}</span>
-            </div>
-        </div>
-    </div>`)
-    }).join(" ");
-    placeForProducts.innerHTML = html;
-
-}
-
-
 socket.on('messages', function(data){
     renderMessage(data);
 });
 
-socket.on('products', function(data){
-    renderProducts(data);
+socket.on('products', function(){
+    // renderProductList();
 });
 
+// function renderProductList(){
+//                 <div class="w-100">
+//                 <button class="btn btn-primary">Agregar al carrito</button>
+//             </div>
+// }
 
-function cartBody(){
+function renderCartBody(){
     const cartBody = document.getElementById("cartBody");
 
     const getCart = ()=> {
-        fetch('http://localhost:8080/api/cart/1/products')
-        .then(response => response.json())
+        /* 
+            Momentaneamente hacemos un fetch a cart con ID 2 hasta que armemos una lógica que 
+            sea capaz de determinar un ID del carrito según el usuario
+        */
+        fetch('http://localhost:8080/api/cart/2/products')
+        .then(response => {
+            if (!response.ok) {
+                cartBody.insertAdjacentHTML('beforeend', '<p>El carrito está vacío</p>')
+                console.log("El carrito está vacío");
+            }
+            return response.json();
+        })
         .then(data => {
         
             console.log(data);
@@ -154,4 +147,4 @@ function deleteCart(id){
     cartBody();
 }
 
-window.onload = cartBody();
+window.onload = renderCartBody();
